@@ -1,0 +1,5 @@
+features === {'mfcc','scattering'}
+normalize === {'none', 'standardize', 'median'}
+projection === {'none', 'lmnn'}
+corpus === {'all', 'train', 'test'}
+reference === {'modes', 'instruments', 'family'}
