@@ -1,3 +1,8 @@
+Ref: mfcc cut stand
+
+Challenger: scat 25, median, log (test log)
+
+
 % This is the README for the experiment timbralSimilaritySol
                                                             
 % Created on 09-Jan-2017 by lagrange                        

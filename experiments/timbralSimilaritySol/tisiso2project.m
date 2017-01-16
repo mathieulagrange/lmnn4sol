@@ -13,3 +13,7 @@ function [config, store, obs] = tisiso2project(config, setting, data)
 % Set behavior for debug mode                                                              
 if nargin==0, timbralSimilaritySol('do', 2, 'mask', {}); return; else store=[]; obs=[]; end
                                                                                            
+switch setting.projection   
+    case 'lmnn'
+        
+end
