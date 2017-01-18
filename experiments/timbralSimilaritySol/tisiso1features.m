@@ -11,7 +11,7 @@ function [config, store, obs] = tisiso1features(config, setting, data)
 % Date: 09-Jan-2017
 
 % Set behavior for debug mode
-if nargin==0, timbralSimilaritySol('do', 1, 'mask', {3 3}); return; else store=[]; obs=[]; end
+if nargin==0, timbralSimilaritySol('do', 1, 'mask', {1 1}); return; else store=[]; obs=[]; end
 
 % fid = fopen([config.inputPath 'fileList.txt']);
 % fileList = textscan(fid, '%s/%s\n');
@@ -50,13 +50,13 @@ scat_opt.M = 2;
 scat_opt.oversampling = 4;
 scat_opt.path_margin = 4;
 
-% failed = 0;
-parfor k=1:length(fileList)
+failed = zeros(1, length(fileList));
+for k=1:length(fileList)
     [a,sr] = audioread([config.inputPath fileList{k} '.wav']);
     cc = 0;
     switch setting.features
         case 'mel'
-            [~, cc] = melfcc(a(:,1), sr);
+            [~, cc] = melfcc(a(:,1), sr, 'wintime', setting.sct/1000, 'hoptime', setting.sct/4000);
         case 'mfcc'
             cc = melfcc(a(:,1), sr, 'numcep', 40);
         case 'scat'
@@ -70,9 +70,9 @@ parfor k=1:length(fileList)
             cc = rand(100);
     end
     cc = nanmean(cc');
+    if ~isfinite(cc), failed(k)=1; end
     features(k, :) = cc;
-%     if ~isfinite(cc), failed{end+1}=k; end
 end
 
 store.features = features;
-% obs.failed = length(failed);
+obs.failed = sum(failed);

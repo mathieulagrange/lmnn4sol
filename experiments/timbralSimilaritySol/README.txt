@@ -1,6 +1,8 @@
 Ref: mfcc cut stand
 
-Challenger: scat 25, median, log (test log)
+Challenger: scat 25, median, log 
+
+evaluate the frame size by considering an octave split
 
 
 % This is the README for the experiment timbralSimilaritySol

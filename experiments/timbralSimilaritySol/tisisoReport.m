@@ -8,9 +8,16 @@ function config = tisisoReport(config)
 
 if nargin==0, timbralSimilaritySol('report', 'r'); return; end
 
-mask = {0 1 0 0 1 1 0};
+% scat
+mask = {3 [1 2 3] 1 1};
 
-for k=1:3
-    mask{end} = k;
-    config = expExpose(config, 't', 'step', 3, 'mask', mask, 'obs', [2 1], 'percent', 0);
-end
+% mel and mfcc
+% mask = {};
+% 
+% for k=1:3
+%     mask{6} = k;
+%     config = expExpose(config, 't', 'step', 3, 'mask', mask, 'percent', 0, 'precision', 4);
+% end
+
+% scattering design
+config = expExpose(config, 'p', 'expand', 'sct', 'step', 3, 'mask', {[1 2] [1 2 3] 1 1 1 3}, 'percent', 0, 'precision', 4, 'obs', 1);

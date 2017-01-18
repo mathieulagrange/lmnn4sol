@@ -11,16 +11,32 @@ function [config, store, obs] = tisiso3performance(config, setting, data)
 % Date: 09-Jan-2017
 
 % Set behavior for debug mode
-if nargin==0, timbralSimilaritySol('do', 3, 'mask', {3 0 1 3 1 3 0}); return; else store=[]; obs=[]; end
+if nargin==0, timbralSimilaritySol('do', 3, 'mask', {3 3 1 1 1 1 1 1 1 1}); return; else store=[]; obs=[]; end
 
 rng(0);
 
-features = getFeatures(data1);
+data1 = expLoad(config, '', 1);
 
-p = squareform(pdist(features));
+data1 = getFeatures(data1, setting, config.step.id);
 
+switch setting.projection   
+    case 'lmnn'
+      features = data.projection*data1.features';  
+end
+% features = features(:, 1);
 [~, ~, gt] = unique(data1.(setting.reference));
 
-o = rankingMetrics(p, gt);
-obs.p = o.precisionAt5;
-obs.map = o.meanAveragePrecision;
+n=knnsearch(features,features,'k',setting.neighbors+1);
+n(:, 1) = [];
+
+for k=1:size(features, 1)
+    ind = gt(k)==gt;
+    ind = ind(n(k, :));
+    prec(k) = mean(ind);
+end
+
+obs.p = mean(prec);
+
+% use for full set of metric (beware of memory comsumption)
+% p = pdist(features);
+% obs = rankingMetrics(p, gt, setting.neighbors, [], 1);

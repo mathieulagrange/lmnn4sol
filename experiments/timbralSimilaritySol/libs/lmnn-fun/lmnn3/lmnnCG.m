@@ -108,7 +108,7 @@ else
 end;
 L=L(1:pars.outdim,:);
 
-try
+% try
 tic;
  lmnnInit(xTr,yTr,Kg,pars);
  options.optTol=pars.thresh;
@@ -121,13 +121,13 @@ tic;
  Det.loss=loss;
  Det.time=toc;
  L=reshape(L,[pars.outdim,d]);
-catch
-  fprintf('\n****************************\n')
-  disp('Sorry, lmnnCG.m threw an error.');
-  disp(sprintf('If this is not easily fixable, please feel free to email me at <a href="mailto:kilian@gmail.com">kilian@gmail.com</a>.'));
-  disp('Please don''t forget to paste the following error message into the email:');  
-  rethrow(lasterror);
-
-end;
+% catch
+%   fprintf('\n****************************\n')
+%   disp('Sorry, lmnnCG.m threw an error.');
+%   disp(sprintf('If this is not easily fixable, please feel free to email me at <a href="mailto:kilian@gmail.com">kilian@gmail.com</a>.'));
+%   disp('Please don''t forget to paste the following error message into the email:');  
+%   rethrow(lasterror);
+% 
+% end;
 
 

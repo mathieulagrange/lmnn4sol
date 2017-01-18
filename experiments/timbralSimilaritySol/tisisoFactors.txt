@@ -1,7 +1,12 @@
 features === {'mel', 'mfcc','scat', 'null'}
-sct ==1/3= [25, 128, 250]
-cut =2:=1/[2 3]= [0, 1]
-normalize =2:== {'none', 'standardize', 'median'}
+sct === [25, 128, 250, 500]
 projection =2:== {'none', 'lmnn'}
-corpus =2:== {'all', '50', '25', '10'}
-reference =3== {'mode', 'instrument', 'family'}
+split =2:== {'none', '50', '25', '10'}
+test =2:=4/[2 3 4]= [0, 1]
+reference =2:== {'family', 'instrument', 'mode'}
+cut =2:=1/2= [0, 1]
+median =2:=1/3= [0, 1]
+compress =2:=1/3= [0, 1]
+standardize =2:== [0, 1]
+neighbors =2:== 5
+

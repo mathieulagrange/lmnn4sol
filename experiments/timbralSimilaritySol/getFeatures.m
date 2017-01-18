@@ -1,27 +1,27 @@
-function features = getFeatures(data)
+function data = getFeatures(data, setting, step)
 
-data = expLoad(config, '', 1);
+data = removeLessThan(data, setting);
 
-data.features(end, :) = []; % TODO fix this
+features = data.features;
+if length(data.mode)<size(features)
+ features(end, :) = []; % TODO fix this
+end
 
-switch setting.corpus
-    case 'test'
-        
-    case 'all'
+switch setting.split
+    case 'none'
         
     otherwise
         nbItems = length(data.mode);
-        idx = randi(nbItems, ceil(nbItems*str2num(setting.corpus)/100), 1);
-        data.features = data.features(idx, :);
+        idx = randi(nbItems, ceil(nbItems*str2num(setting.split)/100), 1);
+        if step==2 && setting.test
+            idx = setdiff(1:nbItems, idx);
+        end
+        features = features(idx, :);
         data.mode = data.mode(idx);
         data.instrument = data.instrument(idx);
         data.family = data.family(idx);
 end
 
-switch setting.projection
-    case 'none'
-        features = data.features;
-end
 
 switch setting.cut
     case 1
@@ -29,28 +29,53 @@ switch setting.cut
             case 'mfcc'
                 features = features(:, 1:13);
             case 'scat'
-                var=nanstd(features);
+                var=nanstd(features); % TODO remove ?
                 var=var/(sum(var));
                 [vars, I] = sort(var,2,'descend');
                 features=features(:,I);
                 sumvar=cumsum(vars);
-                %                 features=features(:,sumvar<.83*sumvar(end));
-                ix=find(sumvar>.83,1);
+                 ix=find(sumvar>.83,1);
                 features=features(:,1:ix);
         end
 end
 
-switch setting.normalize
-    case 'standardize'
-        features=bsxfun(@minus,features, mean(features));
-        features=bsxfun(@rdivide,features, std(features));
-    case 'median'
-        eps=1e-3;
-        medcc=repmat(eps*median(features,1),size(features, 1),1);
-        features = features./medcc;
+switch setting.median
+    case 1
+        features = features./repmat(median(features,1),size(features, 1),1);
 end
 
-switch setting.features
-    case 'scat'
-        features=log1p(features);
+switch setting.compress
+    case 1
+        features=log1p(features/1e-3);
 end
+
+switch setting.standardize
+    case 1
+        features=bsxfun(@minus,features, mean(features));
+        features=bsxfun(@rdivide,features, std(features));
+end
+data.features= features;
+
+function data = removeLessThan(data, setting)
+
+[~, ~, gt] = unique(data.(setting.reference));
+
+class = unique(gt);
+nbPerClass = hist(gt, class);
+
+class = class(nbPerClass>setting.neighbors);
+idx=zeros(1, length(gt));
+for k=1:length(class)
+    idx(class(k)==gt)=1;
+end
+idx = find(idx);
+
+data.features = data.features(idx, :);
+data.mode = data.mode(idx);
+data.instrument = data.instrument(idx);
+data.family = data.family(idx);
+
+
+
+
+
