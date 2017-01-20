@@ -8,6 +8,12 @@ function config = tisisoReport(config)
 
 if nargin==0, timbralSimilaritySol('report', 'r'); return; end
 
+% lmnn
+mask = {[2  3], [1  2], 2, 1, 2, 3, 2, 2, 2, 2};
+config = expExpose(config, 't', 'step', 3, 'mask', mask, 'percent', 0, 'precision', 4, 'obs', 1, 'orderFactor', [1 6 3]);
+
+return
+
 % scat
 mask = {3 [1 2 3] 1 1};
 

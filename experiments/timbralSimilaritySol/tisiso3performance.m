@@ -11,7 +11,7 @@ function [config, store, obs] = tisiso3performance(config, setting, data)
 % Date: 09-Jan-2017
 
 % Set behavior for debug mode
-if nargin==0, timbralSimilaritySol('do', 3, 'mask', {3 3 1 1 1 1 1 1 1 1}); return; else store=[]; obs=[]; end
+if nargin==0, timbralSimilaritySol('do', 3, 'mask', {3 1 2 1 0 2 2 0 0 2 2 2 1}); return; else store=[]; obs=[]; end
 
 rng(0);
 
@@ -19,9 +19,11 @@ data1 = expLoad(config, '', 1);
 
 data1 = getFeatures(data1, setting, config.step.id);
 
-switch setting.projection   
+switch setting.projection
     case 'lmnn'
-      features = data.projection*data1.features';  
+        features = (data.projection*data1.features')';
+    otherwise
+        features = data1.features;
 end
 % features = features(:, 1);
 [~, ~, gt] = unique(data1.(setting.reference));

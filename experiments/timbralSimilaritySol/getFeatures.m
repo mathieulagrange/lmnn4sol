@@ -1,27 +1,28 @@
 function data = getFeatures(data, setting, step)
 
-data = removeLessThan(data, setting);
-
-features = data.features;
-if length(data.mode)<size(features)
- features(end, :) = []; % TODO fix this
+if length(data.mode)<size(data.features)
+ data.features(end, :) = []; % TODO fix this
 end
 
 switch setting.split
     case 'none'
         
+    case 'oct'
+        data = octaveSelection(config, data);
     otherwise
         nbItems = length(data.mode);
         idx = randi(nbItems, ceil(nbItems*str2num(setting.split)/100), 1);
         if step==2 && setting.test
             idx = setdiff(1:nbItems, idx);
         end
-        features = features(idx, :);
+        data.features = data.features(idx, :);
         data.mode = data.mode(idx);
         data.instrument = data.instrument(idx);
         data.family = data.family(idx);
 end
 
+data = removeLessThan(data, setting);
+features = data.features;
 
 switch setting.cut
     case 1
@@ -49,6 +50,15 @@ switch setting.compress
         features=log1p(features/1e-3);
 end
 
+if ~isnan(setting.expand) && setting.expand
+     features = expandFeatures(features, setting.expand);
+end
+
+switch setting.randomize
+    case 1
+     features = randn(size(features));
+end
+
 switch setting.standardize
     case 1
         features=bsxfun(@minus,features, mean(features));
@@ -74,6 +84,22 @@ data.features = data.features(idx, :);
 data.mode = data.mode(idx);
 data.instrument = data.instrument(idx);
 data.family = data.family(idx);
+
+function features = expandFeatures(features, n)
+
+ref = features;
+ex = features;
+while size(features, 2) < n
+   for k=1:size(ref, 2)
+       for m=1:size(ex, 2)
+          nex(:, (k-1)*size(ex, 2)+m) = ex(:, m).*ref(:, k); 
+       end
+   end
+   features = [features nex];
+   ex = nex;
+end
+
+features = features(:, 1:n);
 
 
 

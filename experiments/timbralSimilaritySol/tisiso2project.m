@@ -11,7 +11,7 @@ function [config, store, obs] = tisiso2project(config, setting, data)
 % Date: 09-Jan-2017                                                                        
                                                                                            
 % Set behavior for debug mode                                                              
-if nargin==0, timbralSimilaritySol('do', 2, 'mask', {2 1 2 1 0 3 2 0 0 2 1}); return; else store=[]; obs=[]; end
+if nargin==0, timbralSimilaritySol('do', 2, 'mask', {3 1 2 1 0 2 2 0 0 2 2 2 1}); return; else store=[]; obs=[]; end
 
 rng(0);
 

@@ -45,6 +45,7 @@ end
 store.instrument = instrument;
 store.mode = mode;
 store.family = family;
+store.file = fileList;
 
 scat_opt.M = 2;
 scat_opt.oversampling = 4;
