@@ -1,27 +1,45 @@
-function data = getFeatures(data, setting, step)
+function data = getFeatures(config, data, setting, step)
 
-if length(data.mode)<size(data.features)
+if length(data.mode)<size(data.features, 1)
  data.features(end, :) = []; % TODO fix this
 end
+if length(data.mode)<length(data.file)
+ data.file(end) = []; % TODO fix this
+end
+ 
+
 
 switch setting.split
     case 'none'
-        
-    case 'oct'
-        data = octaveSelection(config, data);
+        idx = 1:length(data.file);
+    case 'octave'
+        idx = octaveSelection(config, data);
     otherwise
         nbItems = length(data.mode);
         idx = randi(nbItems, ceil(nbItems*str2num(setting.split)/100), 1);
         if step==2 && setting.test
             idx = setdiff(1:nbItems, idx);
         end
-        data.features = data.features(idx, :);
-        data.mode = data.mode(idx);
-        data.instrument = data.instrument(idx);
-        data.family = data.family(idx);
 end
-
-data = removeLessThan(data, setting);
+data = filterData(data, idx);
+% 
+% switch setting.reference
+%     case 'judgments'
+%         idx = [];
+%         gt = [];
+%         d = load([config.codePath 'ticelJudgments.mat']);
+%         for k=1:length(d.names)
+%             oct = strfind(data.file, d.names{k});
+%             oct = find(~cellfun(@isempty, oct));
+%             idx = [idx oct];
+%             gt = [gt repmat(d.ci(:, k), 1, length(oct))];
+%         end
+%         [idx, ia] = unique(idx);
+%         data = filterData(data, idx);
+%         data.judgments = gt(:, ia); %TODO fix this
+% end
+idx = removeLessThan(data, setting);
+data = filterData(data, idx);
 features = data.features;
 
 switch setting.cut
@@ -66,7 +84,7 @@ switch setting.standardize
 end
 data.features= features;
 
-function data = removeLessThan(data, setting)
+function idx = removeLessThan(data, setting)
 
 [~, ~, gt] = unique(data.(setting.reference));
 
@@ -80,10 +98,7 @@ for k=1:length(class)
 end
 idx = find(idx);
 
-data.features = data.features(idx, :);
-data.mode = data.mode(idx);
-data.instrument = data.instrument(idx);
-data.family = data.family(idx);
+
 
 function features = expandFeatures(features, n)
 
@@ -100,8 +115,5 @@ while size(features, 2) < n
 end
 
 features = features(:, 1:n);
-
-
-
 
 

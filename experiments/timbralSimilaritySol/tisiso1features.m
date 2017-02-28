@@ -11,7 +11,7 @@ function [config, store, obs] = tisiso1features(config, setting, data)
 % Date: 09-Jan-2017
 
 % Set behavior for debug mode
-if nargin==0, timbralSimilaritySol('do', 1, 'mask', {1 1}); return; else store=[]; obs=[]; end
+if nargin==0, timbralSimilaritySol('do', 1, 'mask', {4 1}); return; else store=[]; obs=[]; end
 
 % fid = fopen([config.inputPath 'fileList.txt']);
 % fileList = textscan(fid, '%s/%s\n');
@@ -29,6 +29,7 @@ for k=1:length(D)-1,
     dk = D{k};
     instrument{k} = dk{1};
     mode{k} = [dk{1} '-' dk{2}];
+    modeFamily{k} = dk{2};
     name{k} = dk{3};
 end
 
@@ -38,12 +39,24 @@ for k=1:length(si),
     family{k} = sik{1};
 end
 
-% length(unique(instrument))
-% length(unique(mode))
-% length(unique(family))
+obs.nbInstrument = length(unique(instrument));
+obs.nbMode = length(unique(mode));
+obs.nbFamily = length(unique(family));
+obs.nbmodeFamily = length(unique(modeFamily));
+obs.nbFiles = length(fileList);
+
+[~, ~, gt] = unique(instrument);
+obs.clInstrument = hist(gt, (1:obs.nbInstrument));
+[~, ~, gt] = unique(mode);
+obs.clMode = hist(gt, (1:obs.nbMode));
+[~, ~, gt] = unique(family);
+obs.clFamily = hist(gt, (1:obs.nbFamily));
+[~, ~, gt] = unique(modeFamily);
+obs.clmodeFamily = hist(gt, (1:obs.nbmodeFamily));
 
 store.instrument = instrument;
 store.mode = mode;
+store.modeFamily = modeFamily;
 store.family = family;
 store.file = fileList;
 
@@ -51,15 +64,21 @@ scat_opt.M = 2;
 scat_opt.oversampling = 4;
 scat_opt.path_margin = 4;
 
+% store = expLoad(config, '', 1);
+% store.file = fileList;
+% return
+
+if strcmp(setting.features, 'null'), return; end
+
 failed = zeros(1, length(fileList));
-for k=1:length(fileList)
+parfor k=1:length(fileList)
     [a,sr] = audioread([config.inputPath fileList{k} '.wav']);
     cc = 0;
     switch setting.features
         case 'mel'
             [~, cc] = melfcc(a(:,1), sr, 'wintime', setting.sct/1000, 'hoptime', setting.sct/4000);
         case 'mfcc'
-            cc = melfcc(a(:,1), sr, 'numcep', 40);
+            cc = melfcc(a(:,1), sr, 'numcep', 40, 'maxfreq', ceil(sr/2));
         case 'scat'
             filt_opt = default_filter_options('audio', sr*setting.sct/1000);
             filt_opt.Q(1) = 12;

@@ -1,6 +1,6 @@
- function data = octaveSelection(config, data, octaveNumber)
+ function idx = octaveSelection(config, data, octaveNumber)
  
- if ~exist(octaveNumber, 'var'), octaveNumber = 4; end
+ if ~exist('octaveNumber', 'var'), octaveNumber = 4; end
 
 %  config.inputPath = '/data/databases/instruments/SOL/';
  
@@ -18,21 +18,25 @@ for k=1:length(D)-1,
     name{k} = dk{3};
 end
 
-oct = strfind(name, num2str(octaveNumber));
+oct = strfind(name, [num2str(octaveNumber) '-']);
 oct = find(~cellfun(@isempty, oct));
 
-notes = {'A', 'B', 'C', 'D', 'E', 'F', 'G'};
-pitched = [];
-for k=1:length(notes)
-   c = strfind(name, notes{k});
-   pitched = [pitched find(~cellfun(@isempty, c))];
-end
+mul = strfind(name, 'mul');
+mul = find(~cellfun(@isempty, mul));
 
-unpitched = setdiff(1:length(name), pitched);
+oct = setdiff(oct, mul);
 
-idx = [oct unpitched];
+idx = oct;
 
-data.features = data.features(idx, :);
-data.mode = data.mode(idx);
-data.instrument = data.instrument(idx);
-data.family = data.family(idx);
+% add unpitched
+% notes = {'A', 'B', 'C', 'D', 'E', 'F', 'G'};
+% pitched = [];
+% for k=1:length(notes)
+%    c = strfind(name, notes{k});
+%    pitched = [pitched find(~cellfun(@isempty, c))];
+% end
+% 
+% unpitched = setdiff(1:length(name), pitched);
+% idx = [oct unpitched];
+
+

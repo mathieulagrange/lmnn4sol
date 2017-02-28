@@ -4,6 +4,13 @@ Challenger: scat 25, median, log
 
 evaluate the frame size by considering an octave split
 
+mfcc expand +1 
+
+rand same scat 8, lmnn +1
+
+octave much better for scat, worst for mfcc even in full band
+
+faire une detection de silence ?
 
 % This is the README for the experiment timbralSimilaritySol
                                                             
