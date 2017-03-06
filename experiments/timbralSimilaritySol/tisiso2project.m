@@ -11,7 +11,7 @@ function [config, store, obs] = tisiso2project(config, setting, data)
 % Date: 09-Jan-2017
 
 % Set behavior for debug mode
-if nargin==0, timbralSimilaritySol('do', 2, 'mask', {2 1 1 1 0 6 1 1 2 0 0 2 1 0 1}); return; else store=[]; obs=[]; end
+if nargin==0, timbralSimilaritySol('do', 2, 'mask', {2 1 2 1 1 5 1 1 2 0 0 2 1 2}); return; else store=[]; obs=[]; end
 
 rng(0);
 
@@ -23,24 +23,19 @@ rng(0);
 %     store.projection = projection;
 % end
 % return
-
-% projection = {};
+if strcmp(setting.projection, 'none') || (strcmp(setting.projection, 'lda') && strcmp(setting.reference, 'judgments') && setting.averageJudgment==0)
+    store.projection = [];
+    return
+end
 
 switch setting.reference
     case 'judgments'
-        switch setting.projection
-            case 'lda'
-                projection = [];
-            otherwise
-                [data, judgments] = handleJudgments(config, data);               
-                parfor k=1:size(judgments, 1)
-                    ju = judgments(k, :);
-                    projection(k, :, :) = process2project(store, config, data, setting, ju);
-                end
-        end
-    case 'averageJudgment'
-         [data, judgment] = handleJudgments(config, data, setting.averageJudgment);
-         projection = process2project(store, config, data, setting, judgment);
+        [data, judgments] = handleJudgments(config, data, setting.averageJudgment);
+        
+        parfor k=1:size(judgments, 1)
+            ju = judgments(k, :);
+            projection(k, :, :) = process2project(store, config, data, setting, ju);
+        end      
     otherwise
         projection = process2project(store, config, data, setting);
 end

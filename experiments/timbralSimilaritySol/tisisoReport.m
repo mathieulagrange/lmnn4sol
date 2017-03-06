@@ -17,7 +17,8 @@ switch config.reportName
 %         config = expExpose(config, 'p', 'step', 3, 'mask', mask, 'expand', 'sct', 'percent', 0, 'obs', 1, 'highlight', 0, 'uncertainty', -1);
 %         
         mask = {[2  3], 0, [1  2], 1, 2, [5 6], 1, 1, 2, 2, 2, 2 1};
-        config = expExpose(config, 'p', 'step', 3, 'mask', mask, 'expand', 'sct', 'percent', 0, 'obs', 1, 'highlight', 0, 'uncertainty', -1);
+        mask = {[2 3], 5, 0, 1, 2, 5, 1, 1, 2, 2, 2, 2, 1};
+        config = expExpose(config, 't', 'step', 3, 'mask', mask, 'percent', 0, 'obs', 1, 'highlight', 0, 'precision', 4);
         
     case 'scatteringTechniqueSlides'
         

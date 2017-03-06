@@ -1,6 +1,6 @@
-function [data, judgments] = handleJudgments(config, data, type)
+function [data, judgments] = handleJudgments(config, data, average)
 
-if ~exist('type', 'var'), type = 'multiple'; end
+if ~exist('average', 'var'), average = 0; end
 
 if length(data.mode)<length(data.file), data.file(end) = []; end
 idx = [];
@@ -13,18 +13,13 @@ for k=1:length(d.names)
     oct = find(~cellfun(@isempty, oct));
     idx = [idx oct];
     gt = [gt repmat(d.ci(:, k), 1, length(oct))];
-    mgt = [mgt repmat(d.medoid(k), 1, length(oct))];
+    % mgt = [mgt repmat(d.medoid(k), 1, length(oct))];
     egt = [egt repmat(d.ensemble(k), 1, length(oct))];
 end
 [idx, ia] = unique(idx);
-switch type
-    case 'multiple'
-        judgments = gt(:, ia); 
-   case 'ensemble'
-        judgments = egt(:, ia); 
-    otherwise
-        judgments = mgt(:, ia);
+if average
+    judgments = egt(:, ia);
+else
+    judgments = gt(:, ia);
 end
 data = filterData(data, idx);
-
-% FIXME the issue is that we can have redondancy in the selection

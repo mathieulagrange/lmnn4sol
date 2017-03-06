@@ -11,17 +11,23 @@ function [config, store, obs] = tisiso3performance(config, setting, data)
 % Date: 09-Jan-2017
 
 % Set behavior for debug mode
-if nargin==0, timbralSimilaritySol('do', 3, 'mask', {2 1 2 1 0 6 1 1 2 0 0 2 1}); return; else store=[]; obs=[]; end
+if nargin==0, timbralSimilaritySol('do', 3, 'mask', {0 0 1 1 0 5 1 0 2 2 2 2}); return; else store=[]; obs=[]; end
 
 rng(0);
+
+if (strcmp(setting.projection, 'lda') && strcmp(setting.reference, 'judgments') && setting.averageJudgment==0) || ...
+   (strcmp(setting.projection, 'lmnn') && strcmp(setting.reference, 'judgments') && setting.averageJudgment==1 && setting.separateJudgment==1) || ...
+   (strcmp(setting.projection, 'none') && strcmp(setting.reference, 'judgments'))
+    obs.p=NaN;
+    return
+end
 
 data1 = expLoad(config, '', 1);
 obs.p=[];
 switch setting.reference
-    case {'judgments', 'averageJudgment'}
-        [data1, judgments] = handleJudgments(config, data1);
-               
-        parfor k=1:size(judgments, 1)           
+    case 'judgments'
+        [data1, judgments] = handleJudgments(config, data1);              
+        parfor k=1:size(judgments, 1)  % par   
             p(k) = process3performance(config, data1, data, setting, judgments(k, :), k);
         end
         obs.p = p;
@@ -38,13 +44,12 @@ data1 = getFeatures(config, data1, setting, config.step.id);
 
 [~, ~, gt] = unique(data1.(setting.reference));
 
-
-
+features = data1.features;
 switch setting.projection
     case 'lmnn'
         switch setting.reference
             case 'judgments'
-                if setting.separateJudgments
+                if setting.separateJudgment
                     data.projection = squeeze(data.projection(k, :, :));
                 else
                     data.projection = squeeze(mean(data.projection, 1));
@@ -52,13 +57,14 @@ switch setting.projection
         end
         features = (data.projection*data1.features')';
     case 'lda'
-        features = [ones(size(data1.features, 1), 1) data1.features] * data.projection';
-    otherwise
-        features = data1.features;
+        if ndims(data.projection)==3
+            data.projection = squeeze(data.projection);
+        end
+        if ~isempty(data.projection)
+            features = [ones(size(data1.features, 1), 1) data1.features] * data.projection';
+        end
 end
 % features = features(:, 1);
-
-
 
 n=knnsearch(features,features,'k',setting.neighbors+1);
 n(:, 1) = [];
