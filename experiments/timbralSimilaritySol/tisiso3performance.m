@@ -15,9 +15,9 @@ if nargin==0, timbralSimilaritySol('do', 3, 'mask', {0 0 1 1 0 5 1 0 2 2 2 2}); 
 
 rng(0);
 
-if (strcmp(setting.projection, 'lda') && strcmp(setting.reference, 'judgments') && setting.averageJudgment==0) || ...
+if ((strcmp(setting.projection, 'lda') || strcmp(setting.projection, 'none')) && strcmp(setting.reference, 'judgments') && setting.averageJudgment==0) || ...
    (strcmp(setting.projection, 'lmnn') && strcmp(setting.reference, 'judgments') && setting.averageJudgment==1 && setting.separateJudgment==1) || ...
-   (strcmp(setting.projection, 'none') && strcmp(setting.reference, 'judgments'))
+   (strcmp(setting.projection, 'none') && strcmp(setting.reference, 'judgments') && setting.separateJudgment==1)
     obs.p=NaN;
     return
 end
