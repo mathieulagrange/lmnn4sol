@@ -39,9 +39,9 @@
 
 \begin{frame}\frametitle{Audio data}
 \begin{itemize}
-  \item
-  \item
-  \item
+  \item the 78 sounds are complemented to get a dataset of 9346 items
+  \item across nuance
+  \item and pitch if relevant
 \end{itemize}
 \end{frame}
 
@@ -55,17 +55,29 @@
 
 \begin{frame}\frametitle{Cluster ensemble}
 \begin{itemize}
-  \item
-  \item
-  \item
+  \item one way to solve the problem is to get one cluster that approximate the 31 judments clusters and learn lmnn projection on this clustering
+  \item tool : \url{http://strehl.com/soft.html}
+  \item paper: \url{http://www.jmlr.org/papers/v3/strehl02a.html}
+  \item method: set of 3 candidates using different techniques and supra consensus decision to pick the best one (average nmi).
+  \item for our problem, the chosen approach is mcla.
 \end{itemize}
 \end{frame}
 
-\begin{frame}\frametitle{}
+
+\begin{frame}\frametitle{Cluster ensemble methods}
 \begin{itemize}
-  \item
-  \item
-  \item
+  \item The first combiner induces a similarity measure from the partitionings and then reclusters the objects (cspa).
+  \item The second combiner is based on hypergraph partitioning (hgpa).
+  \item The third one collapses groups of clusters into meta-clusters which then compete for each object to determine the combined clustering (mcla).
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}\frametitle{lmm projection summation}
+\begin{itemize}
+  \item another is perform lmnn learning on each of the 31 clusterings
+  \item and sum the projection matrices
+  \item control oracle: keep each of the lmnn projection and test them with respect to the corresponding clustering
 \end{itemize}
 \end{frame}
 
